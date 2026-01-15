@@ -78,7 +78,7 @@ const GPSModule = () => {
               <div>
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Coordinates</p>
                 <p className="text-sm font-mono text-slate-700 font-semibold">
-                  {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+                  ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}
                 </p>
               </div>
             </div>
