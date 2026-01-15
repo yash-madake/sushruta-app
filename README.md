@@ -1,16 +1,38 @@
-# React + Vite
+# Sushruta - Senior Health Companion
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Sushruta** is a holistic health management platform designed to empower senior citizens and connect them with their caretakers and doctors.
 
-Currently, two official plugins are available:
+![Banner](https://image2url.com/images/1765805243191-d5f3a19d-770b-41d8-94c1-33d7216f45f0.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Quick Overview
 
-## React Compiler
+This project is a **MERN Stack** application (MongoDB, Express, React, Node.js) that operates in two modes:
+1.  **Demo Mode**: Instant setup with no backend required (uses LocalStorage).
+2.  **Production Mode**: Full API and Database integration.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📚 Documentation
 
-## Expanding the ESLint configuration
+Detailed documentation has been generated in the **`Know More/`** folder:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+*   **[Project Overview](<Know More/PROJECT_OVERVIEW.md>)**: High-level summary and tech stack.
+*   **[Features Overview](<Know More/FEATURES_OVERVIEW.md>)**: Detailed breakdown of functionality (Meds, Vitals, Reports).
+*   **[Quick Start Guide](<Know More/QUICK_START_GUIDE.md>)**: Instructions to install and run the app.
+*   **[Demo Walkthrough](<Know More/DEMO_WALKTHROUGH.md>)**: Guide to exploring the app in Demo Mode.
+*   **[Role-Based Auth](<Know More/ROLE_BASED_AUTH_README.md>)**: Explanation of Senior, Caretaker, and Doctor roles.
+*   **[Implementation Summary](<Know More/IMPLEMENTATION_SUMMARY.md>)**: Technical architecture and code structure.
+*   **[Final Delivery](<Know More/FINAL_DELIVERY.md>)**: Status report and roadmap.
+
+## ⚡ Getting Started (Fast Track)
+
+To run the frontend demo immediately:
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+
+---
+
+*Made with ❤️ for our elders.*
