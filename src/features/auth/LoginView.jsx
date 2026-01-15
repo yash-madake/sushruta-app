@@ -1,30 +1,29 @@
-import React from 'react';
+import { login } from '../../services/api'; 
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const LoginView = ({ onLogin, setLoading, loading, showToast, setView, handleInputChange, formData, DB }) => {
+const LoginView = () => {
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setError('');
 
-    // Simulate Network Delay
-    setTimeout(() => {
-      // 1. Fetch Users from Local Database
-      const users = DB.get('users') || [];
+    try {
+      // 2. Call the REAL backend
+      const user = await login(phone, password);
       
-      // 2. Validate Credentials
-      const user = users.find(u => u.phone === formData.loginPhone && u.pin === formData.loginPin);
-      
-      if (user) {
-        showToast(`Welcome back, ${user.name}`, 'success');
-        // Pass user object back up to App.jsx to set Global State
-        setTimeout(() => onLogin(user), 1500);
-      } else {
-        showToast('Invalid Credentials', 'error');
-        setLoading(false);
-      }
-    }, 1500);
+      console.log('Login Success:', user);
+      navigate('/dashboard'); // Redirect on success
+    } catch (err) {
+      setError(err.message); // Show error from backend (e.g., "Invalid credentials")
+    }
   };
 
+  
   return (
     <div className="animate-fade-in max-w-sm mx-auto w-full">
       <h2 className="text-3xl font-bold text-blue-900 mb-2">Welcome Back</h2>
