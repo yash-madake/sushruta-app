@@ -59,7 +59,7 @@ Follow these instructions to set up the project locally on your machine.
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/your-username/sushruta-app.git](https://github.com/your-username/sushruta-app.git)
+    git clone [https://github.com/your-username/sushruta-app.git](https://github.com/yash-madake/sushruta-app.git)
     cd sushruta-app
     ```
 
@@ -89,10 +89,10 @@ Follow these instructions to set up the project locally on your machine.
 ## 👥 Team
 ## 👥 Team
 - **Yash Madake** — Full Stack Developer (System architecture, API integration, frontend–backend coordination)  
-- **Sanskar Sagare** — Frontend Developer (UI components, state management, responsive design, UX flow)  
-- **Rohan Yadav** — Backend Developer (API logic, database models, authentication, server-side workflows)  
+- **Sanskar Sagare** — App Developer (UI components, state management, responsive design, UX flow)  
+- **Rohan Yadav** — Frontend Developer (UI components, state management, responsive design, UX flow)  
 - **Ruturaj Joshi** — AI Engineer (AI feature exploration, data processing, model integration, intelligent automation)  
-- **Taarak Gulhane** — Cloud & Deployment Engineer (Cloud infrastructure setup, CI/CD pipelines, environment configuration)
+- **Taarak Gulhane** — Backend Developer , Cloud & Deployment Engineer (Cloud infrastructure setup, CI/CD pipelines, environment configuration)
 
 ---
 
