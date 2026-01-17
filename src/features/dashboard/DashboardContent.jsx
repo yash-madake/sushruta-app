@@ -4,8 +4,180 @@ import SosButton from './SosButton';
 import ManualEntryModal from '../../components/ui/ManualEntryModal';
 import NotificationAlert from '../../components/ui/NotificationAlert';
 import ChartModal from '../../components/charts/ChartModal';
-import HealthScoreRing from '../../components/charts/HealthScoreRing'; // Importing Ring directly for simplicity
+import HealthScoreRing from '../../components/charts/HealthScoreRing'; 
 import { MockBackend } from '../../services/mockBackend';
+
+// --- NEW COMPONENT: HEALTH SCORE CARD ---
+const HealthScoreCard = ({ data, refreshData, onShowHistory, setLiveScore, userRole }) => {
+    const [score, setScore] = useState(0);
+    const [breakdown, setBreakdown] = useState({});
+    
+    // Role Logic for Score Card
+    const role = (userRole || '').toLowerCase();
+    const isDoctor = role === 'doctor';
+
+    // THE CORE SCORE ALGORITHM
+    useEffect(() => {
+        let tempScore = 0;
+        let log = {};
+
+        // 1. Medicine Adherence (30 Points)
+        const dailyMeds = data.meds.filter(m => m.category === 'Daily Routine');
+        if (dailyMeds.length > 0) {
+            const taken = dailyMeds.filter(m => m.taken).length;
+            const medScore = (taken / dailyMeds.length) * 30;
+            tempScore += medScore;
+            log.meds = { val: `${taken}/${dailyMeds.length}`, pts: medScore.toFixed(0) };
+        } else {
+            tempScore += 30;
+            log.meds = { val: "N/A", pts: 30 };
+        }
+
+        // 2. Blood Pressure (20 Points)
+        const [sys, dia] = data.vitals.bp.split('/').map(Number);
+        let bpPoints = 20;
+        if (sys > 140 || dia > 90) bpPoints = 5; 
+        else if (sys > 130 || dia > 80) bpPoints = 10;
+        else if (sys > 120) bpPoints = 15;
+        tempScore += bpPoints;
+        log.bp = { val: data.vitals.bp, pts: bpPoints };
+
+        // 3. Heart Rate (10 Points)
+        const hr = data.vitals.heartRate;
+        let hrPoints = (hr >= 60 && hr <= 100) ? 10 : 5;
+        tempScore += hrPoints;
+        log.hr = { val: hr, pts: hrPoints };
+
+        // 4. Sleep (15 Points)
+        let sleepVal = (typeof data.vitals.sleep === 'object') ? data.vitals.sleep.value : parseFloat(data.vitals.sleep) || 0;
+        let sleepPoints = (sleepVal >= 7) ? 15 : (sleepVal >= 5 ? 8 : 2);
+        tempScore += sleepPoints;
+        log.sleep = { val: sleepVal.toFixed(1) + 'h', pts: sleepPoints };
+
+        // 5. Steps (15 Points)
+        const steps = data.vitals.steps;
+        let stepPoints = (steps > 5000) ? 15 : (steps > 2000 ? 8 : 2);
+        tempScore += stepPoints;
+        log.steps = { val: steps, pts: stepPoints };
+
+        // 6. Exercise (10 Points)
+        if (data.vitals.exercise) {
+            tempScore += 10;
+            log.ex = { val: "Yes", pts: 10 };
+        } else {
+            log.ex = { val: "No", pts: 0 };
+        }
+
+        const finalScore = Math.round(tempScore);
+        setScore(finalScore);
+        setBreakdown(log);
+        if (setLiveScore) setLiveScore(finalScore);
+    }, [data]);
+
+    const toggleExercise = () => {
+        const newData = {...data};
+        newData.vitals.exercise = !newData.vitals.exercise;
+        MockBackend.updateData(newData);
+        refreshData();
+    };
+
+    const vitalsTotal = (parseInt(breakdown.bp?.pts||0) + parseInt(breakdown.hr?.pts||0));
+    const sleepActivityTotal = (parseInt(breakdown.sleep?.pts||0) + parseInt(breakdown.steps?.pts||0));
+
+    return (
+        <div className="bg-white rounded-[20px] shadow-sm overflow-hidden relative p-6 border border-slate-100">
+            
+            {/* Background Decoration */}
+            <div className="absolute -top-5 -right-5 w-36 h-36 opacity-5 pointer-events-none">
+                <svg viewBox="0 0 24 24" className="w-full h-full fill-current text-blue-900">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+            </div>
+
+            {/* Header */}
+            <div className="mb-6 relative z-10">
+                <div className="text-xl text-blue-900 font-bold flex flex-col gap-1">
+                    Daily Health Score
+                    <span className="text-sm text-slate-500 font-normal">As per WHO</span>
+                </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-8 items-center relative z-10">
+                
+                {/* Left: Circular UI with /100 label */}
+                <div 
+                    className="flex-none flex flex-col items-center justify-center w-40 cursor-pointer group"
+                    onClick={onShowHistory}
+                    title="Click to view Score History"
+                >
+                    <svg viewBox="0 0 36 36" className="circular-chart transition transform group-hover:scale-105">
+                        <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path 
+                            className="circle" 
+                            stroke={score < 50 ? '#ef4444' : score < 80 ? '#f59e0b' : '#10b981'} 
+                            strokeDasharray={`${score}, 100`} 
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                        />
+                        <text x="18" y="19" className="percentage">{score}</text>
+                        <text x="18" y="24" className="text-[3px] font-medium fill-slate-400" textAnchor="middle">/ 100</text>
+                    </svg>
+
+                    <div className="-mt-4 bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm z-20 flex items-center gap-1 group-hover:bg-emerald-100 transition">
+                        DAILY SCORE <i className="ph-bold ph-chart-line-up"></i>
+                    </div>
+                </div>
+
+                {/* Right: Metrics Grid */}
+                <div className="flex-1 grid grid-cols-2 gap-4 w-full">
+                    {/* Meds */}
+                    <div className="bg-slate-50 rounded-xl p-4 flex justify-between items-center transition hover:-translate-y-1 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-200">
+                        <div>
+                            <h4 className="text-xs text-slate-500 mb-1">Meds Taken</h4>
+                            <div className="text-base font-bold text-emerald-500">{breakdown.meds?.pts || 0}/30</div>
+                        </div>
+                    </div>
+
+                    {/* Vitals */}
+                    <div className="bg-slate-50 rounded-xl p-4 flex justify-between items-center transition hover:-translate-y-1 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-200">
+                        <div>
+                            <h4 className="text-xs text-slate-500 mb-1">Vitals (BP/HR)</h4>
+                            <div className="text-base font-bold text-blue-500">{vitalsTotal}/30</div>
+                        </div>
+                    </div>
+
+                    {/* Sleep */}
+                    <div className="bg-slate-50 rounded-xl p-4 flex justify-between items-center transition hover:-translate-y-1 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-200">
+                        <div>
+                            <h4 className="text-xs text-slate-500 mb-1">Sleep & Activity</h4>
+                            <div className="text-base font-bold text-purple-500">{sleepActivityTotal}/30</div>
+                        </div>
+                    </div>
+
+                    {/* Exercise */}
+                    <div className="bg-slate-50 rounded-xl p-4 flex justify-between items-center transition hover:-translate-y-1 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-200">
+                        <div>
+                            <h4 className="text-xs text-slate-500 mb-1">Exercise</h4>
+                            <div className="text-base font-bold text-orange-500">{breakdown.ex?.pts || 0}/10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                 
+            {/* Footer Banner - HIDDEN FOR DOCTOR */}
+            {!isDoctor && (
+                <div 
+                    onClick={toggleExercise} 
+                    className={`mt-6 rounded-lg p-3 text-center text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition select-none 
+                        ${data.vitals.exercise ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}
+                    `}
+                >
+                    <i className={`ph-fill ${data.vitals.exercise ? 'ph-check-circle' : 'ph-circle'}`}></i>
+                    {data.vitals.exercise ? 'Exercise Recorded' : 'Mark Exercise as Done'}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const DashboardContent = ({ data, refreshData, user, setTab }) => {
   const [connected, setConnected] = useState(false);
@@ -152,6 +324,14 @@ const DashboardContent = ({ data, refreshData, user, setTab }) => {
 
       {/* SOS Button Component */}
       <SosButton isCareTeam={isCareTeam} sosStep={sosStep} handleSOS={handleSOS} user={user} />
+
+      {/* --- ADDED HEALTH SCORE CARD HERE --- */}
+      <HealthScoreCard 
+        data={data} 
+        refreshData={refreshData} 
+        userRole={userRole} 
+        onShowHistory={() => setSelectedMetric('Health Score')} // Simple handler
+      />
 
       {/* Grid of Vitals Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

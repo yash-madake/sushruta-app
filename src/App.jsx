@@ -20,7 +20,7 @@ import EmotionalWellnessTab from './features/wellness/EmotionalWellnessTab';
 import AppointmentsTab from './features/connect/AppointmentsTab';
 import GovernmentSchemesTab from './features/resources/GovernmentSchemesTab';
 import AiAssistantTab from './features/assistant/AiAssistantTab';
-
+import MedicineShopTab from './features/shop/MedicineShopTab';
 // --- SERVICES & UI ---
 import { MockBackend } from './services/mockBackend';
 import { AuthService } from './services/authService';
@@ -132,13 +132,7 @@ const App = () => {
       case 'assistant': 
         return <AiAssistantTab />;
       case 'shop': 
-        return (
-          <div className="flex flex-col items-center justify-center h-full text-slate-400 p-8 animate-fade-in">
-            <i className="ph-duotone ph-shopping-cart text-6xl mb-4 text-blue-200"></i>
-            <h2 className="text-xl font-bold text-slate-600">Pharmacy Integration</h2>
-            <p>Connects to local pharmacy APIs (1mg, Apollo) in production.</p>
-          </div>
-        );
+        return <MedicineShopTab />;
       default: 
         return <DashboardContent data={data} refreshData={refreshData} user={user} />;
     }
