@@ -9,8 +9,12 @@ const ProfileTab = ({ data, refreshData, userRole = 'senior' }) => {
   // 2. STATE MANAGEMENT
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(data?.user || { name: "User", age: 65 });
-  const [connectIdInput, setConnectIdInput] = useState("");
   const fileInputRef = useRef(null);
+
+  // --- NEW: CONNECTION LIST STATE ---
+  const [connections, setConnections] = useState([]); // Stores list of connected users
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
+  const [newConn, setNewConn] = useState({ name: '', role: 'Caretaker', phone: '', password: '' }); // Form Data
 
   // 3. GENERATE DYNAMIC ID (Simulated)
   const [sushrutaId] = useState(() => {
@@ -19,7 +23,7 @@ const ProfileTab = ({ data, refreshData, userRole = 'senior' }) => {
     return `${prefix}-${randomNum}`;
   });
 
-  // 4. VOICE FEEDBACK ENGINE (Browser API)
+  // 4. VOICE FEEDBACK ENGINE
   const speak = (text) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -45,14 +49,114 @@ const ProfileTab = ({ data, refreshData, userRole = 'senior' }) => {
     alert("Profile Updated!");
   };
 
-  const handleConnectionAction = (action) => {
-    speak(`You have ${action}ed the connection request.`);
-    alert(`Request ${action}ed successfully.`);
+  // --- HANDLE ADD CONNECTION ---
+  const handleAddConnection = () => {
+    // Validation
+    if (!newConn.name || !newConn.phone || !newConn.password) {
+      alert("Please fill in Name, Mobile, and Password.");
+      return;
+    }
+
+    speak(`Adding ${newConn.name} to your connections.`);
+    
+    // Simulate Processing
+    setTimeout(() => {
+        const newEntry = {
+            id: Date.now(),
+            name: newConn.name,
+            role: newConn.role,
+            phone: newConn.phone,
+            initial: newConn.name.charAt(0).toUpperCase()
+        };
+
+        setConnections([...connections, newEntry]);
+        setNewConn({ name: '', role: 'Caretaker', phone: '', password: '' }); // Reset Form
+        setIsModalOpen(false); // Close Modal
+        alert("Connection Established Successfully!");
+    }, 800);
+  };
+
+  const removeConnection = (id) => {
+      if(confirm("Remove this person from your connections?")) {
+          setConnections(connections.filter(c => c.id !== id));
+      }
   };
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in h-full overflow-y-auto pb-24">
+    <div className="p-6 space-y-6 animate-fade-in h-full overflow-y-auto pb-24 relative">
       
+      {/* --- FIX: RENDER MODAL DIRECTLY HERE (Prevents cursor focus loss) --- */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+              <div className="bg-slate-900 p-6 flex justify-between items-center">
+                  <h3 className="text-white font-bold text-xl flex items-center gap-2">
+                      <i className="ph-fill ph-link"></i> Link New Connection
+                  </h3>
+                  <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white transition">
+                      <i className="ph-bold ph-x text-xl"></i>
+                  </button>
+              </div>
+              
+              <div className="p-6 space-y-4">
+                  <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase">Name</label>
+                      <input 
+                          type="text" 
+                          placeholder="e.g. Dr. Sharma" 
+                          className="w-full border rounded-lg p-3 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-100 outline-none"
+                          value={newConn.name}
+                          onChange={e => setNewConn({...newConn, name: e.target.value})}
+                      />
+                  </div>
+
+                  <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase">Role</label>
+                      <select 
+                          className="w-full border rounded-lg p-3 bg-white text-slate-700 outline-none"
+                          value={newConn.role}
+                          onChange={e => setNewConn({...newConn, role: e.target.value})}
+                      >
+                          <option value="Caretaker">Caretaker</option>
+                          <option value="Doctor">Doctor</option>
+                          <option value="Family Member">Family Member</option>
+                          <option value="Guardian">Guardian</option>
+                      </select>
+                  </div>
+
+                  <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase">Mobile Number</label>
+                      <input 
+                          type="tel" 
+                          placeholder="10-digit number" 
+                          className="w-full border rounded-lg p-3 font-mono text-slate-700 outline-none"
+                          value={newConn.phone}
+                          onChange={e => setNewConn({...newConn, phone: e.target.value})}
+                      />
+                  </div>
+
+                  <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase">Secure Password</label>
+                      <input 
+                          type="password" 
+                          placeholder="******" 
+                          className="w-full border rounded-lg p-3 font-mono text-slate-700 outline-none"
+                          value={newConn.password}
+                          onChange={e => setNewConn({...newConn, password: e.target.value})}
+                      />
+                  </div>
+
+                  <button 
+                      onClick={handleAddConnection}
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 mt-2 transition active:scale-95"
+                  >
+                      Establish Connection
+                  </button>
+              </div>
+          </div>
+        </div>
+      )}
+
       {/* --- HEADER SECTION --- */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
@@ -77,7 +181,7 @@ const ProfileTab = ({ data, refreshData, userRole = 'senior' }) => {
 
       <div className="max-w-4xl mx-auto space-y-6">
         
-        {/* 1. BASIC DETAILS CARD (Visible to Everyone) */}
+        {/* 1. BASIC DETAILS CARD */}
         <div className="bg-white p-8 rounded-2xl border shadow-sm border-l-4 border-l-teal-500">
           <h3 className="font-bold text-teal-800 border-b pb-4 mb-6 flex items-center gap-2 text-lg">
             <i className="ph-fill ph-identification-card text-2xl"></i> 1. Basic Details
@@ -113,7 +217,7 @@ const ProfileTab = ({ data, refreshData, userRole = 'senior' }) => {
           </div>
         </div>
 
-        {/* --- 2. CARETAKER / DOCTOR BLOCK (Accept/Deny) --- */}
+        {/* --- 2. CARETAKER / DOCTOR BLOCK --- */}
         {isCaretakerOrDoctor && (
           <div className="bg-indigo-50 p-6 rounded-2xl border-2 border-indigo-200 shadow-md">
             <h3 className="font-bold text-indigo-900 mb-4 flex items-center gap-2 text-lg">
@@ -130,14 +234,14 @@ const ProfileTab = ({ data, refreshData, userRole = 'senior' }) => {
                 </div>
               </div>
               <div className="flex gap-3">
-                <button onClick={() => handleConnectionAction("Accept")} className="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700">Accept</button>
-                <button onClick={() => handleConnectionAction("Deny")} className="bg-white border border-red-200 text-red-600 px-6 py-2 rounded-lg font-bold hover:bg-red-50">Deny</button>
+                <button className="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700">Accept</button>
+                <button className="bg-white border border-red-200 text-red-600 px-6 py-2 rounded-lg font-bold hover:bg-red-50">Deny</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* --- 3. SENIOR PRIVATE SECTIONS (Strictly Hidden for Caretaker/Doctor) --- */}
+        {/* --- 3. SENIOR PRIVATE SECTIONS --- */}
         {isSenior && (
           <div className="space-y-6">
             <div className="bg-white p-8 rounded-2xl border shadow-sm border-l-4 border-l-red-500">
@@ -166,17 +270,56 @@ const ProfileTab = ({ data, refreshData, userRole = 'senior' }) => {
               </div>
             </div>
 
-            {/* Connection Tool for Senior */}
-            <div className="bg-slate-900 p-8 rounded-2xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-left">
-                <h2 className="text-xl font-bold flex items-center gap-2"><i className="ph-fill ph-user-plus text-blue-400"></i> Add Connection</h2>
-                <p className="text-slate-400 text-sm">Enter ID to share health records.</p>
+            {/* --- UPDATED: CONNECTION LIST SECTION --- */}
+            <div className="bg-slate-900 p-8 rounded-2xl text-white shadow-xl">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
+                <div className="text-left">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    <i className="ph-fill ph-users-three text-blue-400"></i> My Care Team
+                  </h2>
+                  <p className="text-slate-400 text-sm">Manage who can view your health records.</p>
+                </div>
+                <button 
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold transition shadow-lg flex items-center gap-2 active:scale-95"
+                >
+                  <i className="ph-bold ph-plus"></i> Add Connection
+                </button>
               </div>
-              <div className="flex w-full md:w-auto bg-white/10 p-1.5 rounded-xl border border-white/20">
-                <input placeholder="Enter ID" className="bg-transparent px-4 py-2 outline-none flex-1 text-white" value={connectIdInput} onChange={(e) => setConnectIdInput(e.target.value)} />
-                <button onClick={() => { speak(`Request sent to ${connectIdInput}`); alert("Sent!"); setConnectIdInput(""); }} className="bg-blue-600 px-6 py-2 rounded-lg font-bold">Send</button>
-              </div>
+
+              {/* LIST OF CONNECTIONS */}
+              {connections.length === 0 ? (
+                <div className="text-center p-6 bg-white/5 rounded-xl border border-white/10 border-dashed">
+                  <p className="text-slate-500 text-sm">No active connections. Click "Add Connection" to start.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {connections.map(user => (
+                    <div key={user.id} className="bg-white/10 p-4 rounded-xl border border-white/20 flex items-center justify-between gap-4 animate-slide-up hover:bg-white/15 transition">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg">
+                          {user.initial}
+                        </div>
+                        <div>
+                          <p className="font-bold text-white text-sm">{user.name}</p>
+                          <span className="text-[10px] uppercase tracking-wider bg-blue-500/30 border border-blue-400/30 px-2 py-0.5 rounded text-blue-100 font-bold inline-block">
+                            {user.role}
+                          </span>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => removeConnection(user.id)}
+                        className="text-slate-400 hover:text-red-400 p-2 transition"
+                        title="Remove Connection"
+                      >
+                        <i className="ph-bold ph-trash"></i>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+            
           </div>
         )}
       </div>
