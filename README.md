@@ -86,7 +86,7 @@ Follow these instructions to set up the project locally on your machine.
 
 ---
 
-## 👥 Team
+
 ## 👥 Team
 - **Yash Madake** — Full Stack Developer (System architecture, API integration, frontend–backend coordination)  
 - **Sanskar Sagare** — App Developer (UI components, state management, responsive design, UX flow)  
@@ -96,4 +96,3 @@ Follow these instructions to set up the project locally on your machine.
 
 ---
 
-Made with ❤️ for the Hackathon.
