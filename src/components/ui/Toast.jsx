@@ -6,10 +6,10 @@ const Toast = ({ msg, type, onClose }) => {
   useEffect(() => {
     if (msg) {
       setVisible(true);
-      // Auto-hide after 3 seconds
+      
       const timer = setTimeout(() => {
         setVisible(false);
-        if (onClose) onClose(); // Optional callback to clear state in parent
+        if (onClose) onClose(); 
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -17,7 +17,6 @@ const Toast = ({ msg, type, onClose }) => {
 
   if (!visible || !msg) return null;
 
-  // Determine styles based on type ('success' or 'error')
   const bgColors = type === 'error' ? 'bg-red-500' : 'bg-emerald-600';
   const iconClass = type === 'error' ? 'ph-warning-circle' : 'ph-check-circle';
 

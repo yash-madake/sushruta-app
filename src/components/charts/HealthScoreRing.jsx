@@ -1,14 +1,11 @@
 import React from 'react';
 
 const HealthScoreRing = ({ score, size = 160 }) => {
-  // Determine color based on score thresholds
   const strokeColor = score < 50 ? '#ef4444' : score < 80 ? '#f59e0b' : '#10b981';
 
-  // SVG Configuration
   const strokeWidth = 2.5;
-  const radius = 15.9155; // Radius to make circumference approx 100 for easy percentage calculation
-  const center = 18; // Center point (radius + strokeWidth/2 approx)
-
+  const radius = 15.9155;
+  const center = 18;
   return (
     <div 
       className="relative flex items-center justify-center group" 
@@ -33,7 +30,6 @@ const HealthScoreRing = ({ score, size = 160 }) => {
           d={`M${center} 2.0845 a ${radius} ${radius} 0 0 1 0 ${radius * 2} a ${radius} ${radius} 0 0 1 0 -${radius * 2}`}
         />
 
-        {/* Center Text: Score */}
         <text 
           x="18" 
           y="19" 
@@ -44,7 +40,6 @@ const HealthScoreRing = ({ score, size = 160 }) => {
           {score}
         </text>
 
-        {/* Center Text: Label */}
         <text 
           x="18" 
           y="24" 

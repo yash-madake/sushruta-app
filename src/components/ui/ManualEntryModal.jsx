@@ -8,26 +8,22 @@ const ManualEntryModal = ({ metric, onClose, onSave }) => {
   const [hrs, setHrs] = useState('');
   const [mins, setMins] = useState('');
 
-  // Determine the type of metric being edited
   const isBP = metric.includes('Blood Pressure') || metric === 'BP';
   const isSleep = metric.includes('Sleep');
   const isSteps = metric.includes('Steps');
   const isHeart = metric.includes('Heart');
 
-  // Logic to package the data correctly before saving
   const handleSave = () => {
     if (isBP) {
       if (sys && dia) onSave(`${sys}/${dia}`);
     } else if (isSleep) {
       if (hrs && mins) {
-        // Sleep needs both a display string and a numeric value for graphs
         onSave({ 
           display: `${hrs}h ${mins}m`, 
           value: parseFloat(hrs) + parseFloat(mins) / 60 
         });
       }
     } else {
-      // Standard numeric inputs (Steps, Heart Rate)
       onSave(val);
     }
   };
@@ -36,25 +32,21 @@ const ManualEntryModal = ({ metric, onClose, onSave }) => {
     <div className="fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
       <div className="bg-white rounded-3xl w-full max-w-sm p-8 relative animate-slide-up shadow-2xl">
         
-        {/* Close Button */}
         <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
           <i className="ph-bold ph-x text-xl"></i>
         </button>
 
-        {/* Header Section */}
         <div className="text-center mb-6">
           <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-            {/* Dynamic Icon based on metric type */}
+            
             <i className={`text-2xl ph-fill ${isSteps ? 'ph-sneaker-move' : isHeart ? 'ph-heartbeat' : isBP ? 'ph-drop' : 'ph-moon-stars'}`}></i>
           </div>
           <h3 className="text-xl font-bold text-slate-800">Update {metric}</h3>
           <p className="text-slate-400 text-sm">Enter your latest reading</p>
         </div>
 
-        {/* Dynamic Input Fields */}
         <div className="mb-6">
           {isBP ? (
-            // Blood Pressure Input (SYS/DIA)
             <div className="flex items-center gap-2 justify-center">
               <div className="relative">
                 <input type="number" placeholder="120" value={sys} onChange={e => setSys(e.target.value)} className="w-20 p-3 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 no-spinner" />
@@ -68,7 +60,6 @@ const ManualEntryModal = ({ metric, onClose, onSave }) => {
               <span className="text-sm font-bold text-slate-500 ml-2">mmHg</span>
             </div>
           ) : isSleep ? (
-            // Sleep Input (Hours & Minutes)
             <div className="flex items-center gap-3 justify-center">
               <div className="relative">
                 <input type="number" placeholder="7" value={hrs} onChange={e => setHrs(e.target.value)} className="w-20 p-3 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 no-spinner" />
@@ -80,7 +71,6 @@ const ManualEntryModal = ({ metric, onClose, onSave }) => {
               </div>
             </div>
           ) : (
-            // Standard Single Value Input (Steps/Heart Rate)
             <div className="relative">
               <input
                 type="number"
@@ -95,7 +85,6 @@ const ManualEntryModal = ({ metric, onClose, onSave }) => {
           )}
         </div>
 
-        {/* Save Button */}
         <button onClick={handleSave} className="w-full py-3 bg-blue-900 text-white font-bold rounded-xl hover:bg-blue-800 shadow-lg shadow-blue-200 transition-all active:scale-95">
           Update Data
         </button>

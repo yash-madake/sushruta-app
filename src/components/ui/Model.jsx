@@ -5,18 +5,15 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
-    // 1. Overlay: Fixed, full screen, semi-transparent black background with blur
     <div className="fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
       
-      {/* 2. Modal Card: White container that slides up */}
       <div className="bg-white rounded-3xl w-full max-w-lg p-6 relative animate-slide-up shadow-2xl">
         
-        {/* Header: Optional Title and Close Button */}
         <div className="flex justify-between items-center mb-4">
           {title ? (
             <h3 className="text-xl font-bold text-slate-800">{title}</h3>
           ) : (
-            /* Spacer to keep close button on the right if no title */
+   
             <span></span> 
           )}
           
@@ -28,7 +25,6 @@ const Modal = ({ isOpen, onClose, title, children }) => {
           </button>
         </div>
 
-        {/* 3. Content: This is where specific forms/charts will be injected */}
         <div>
             {children}
         </div>
