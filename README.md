@@ -11,7 +11,7 @@ Navigating modern healthcare technology can be overwhelming for seniors. Existin
 
 ### 1. **Smart Dashboard**
 * **Vital Monitoring:** Real-time tracking of Heart Rate, BP, SpO2, and Glucose levels with visual trends.
-* **One-Click SOS:** A prominent emergency button that alerts saved contacts immediately with GPS location.
+* **One-Click SOS:** A prominent emergency button that alerts saved contacts immediately with real time GPS location. around the area.
 
 ### 2. **Medicine Management**
 * **Digital Pill Box:** Track daily medication schedules (Morning, Afternoon, Night).
