@@ -4,7 +4,7 @@
 
 Sushruta is a comprehensive, senior-centric web application designed to simplify health management for the elderly. Built with accessibility in mind, it bridges the gap between seniors, their families, and healthcare providers.
 
-## 🌟 Problem Statement
+## 🌟 Problem Statement good man
 Navigating modern healthcare technology can be overwhelming for seniors. Existing apps are often cluttered, complex, or lack specific features for geriatric care. Sushruta aims to provide a **simplified, high-contrast, simple UI design,user friendly and intuitive interface** for senior citizens managing medicines, appointments, and emergency response.
 
 ## 🚀 Key Features
